@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Purple Galaxy Haunted Hub — Halloween Edition</title>
+    <link rel="icon" type="image/png" sizes="512x512" href="https://raw.githubusercontent.com/tokun787-boop/Condo-Games-/main/image/server2.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:ital,opsz,wght@0,14..32,400..900;1,14..32,400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0b0614;
+            --bg-2: #140b22;
+            --surface: #1e1133;
+            --surface-2: #2a1845;
+            --line: rgba(249, 115, 22, 0.25);
+            --line-bright: rgba(249, 115, 22, 0.65);
+            --ink: #faede3;
+            --ink-dim: #d7bfae;
+            --ink-faint: #9c849e;
+            --orange: #f97316;
+            --orange-bright: #fb923c;
+            --purple: #9333ea;
+            --purple-bright: #c084fc;
+            --green: #4ade80;
+            --shadow: 0 25px 50px -12px rgba(10, 2, 25, 0.85);
+            --font-d: "Chakra Petch", system-ui, sans-serif;
+            --font-b: "Inter", system-ui, sans-serif;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html { scroll-behavior: smooth; }
+        body { background: var(--bg); color: var(--ink); font-family: var(--font-b); line-height: 1.6; overflow-x: hidden; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        a { color: inherit; text-decoration: none; }
+        button { padding: 0; border: 0; color: inherit; background: none; font: inherit; cursor: pointer; }
+        img, video { display: block; max-width: 100%; }
+        .wrap { width: min(1280px, 92vw); margin-inline: auto; }
+
+        /* Immersive Animated Background Layers */
+        .galaxy-bg {
+            position: fixed; inset: 0; z-index: -3;
+            background: radial-gradient(circle at 50% 20%, #2e1065 0%, #17072e 50%, #0b0614 100%);
+        }
+        .stars-overlay {
+            position: fixed; inset: 0; z-index: -2;
+            background-image: radial-gradient(white 1px, transparent 0);
+            background-size: 35px 35px;
+            opacity: 0.15;
+            animation: driftStars 60s linear infinite;
+        }
+        @keyframes driftStars {
+            from { background-position: 0 0; }
+            to { background-position: 0 1000px; }
+        }
+        .nebula-glow {
+            position: fixed; inset: 0; z-index: -1;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(249, 115, 22, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(147, 51, 234, 0.2) 0%, transparent 40%);
+            pointer-events: none;
+            filter: blur(60px);
+        }
+
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed; inset: 0; z-index: 99999;
+            background: #0b0614;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        #loading-screen.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
+        .app-content { opacity: 0; transition: opacity 0.5s ease; }
+        .app-content.is-ready { opacity: 1; }
+        .loader-orbit { width: 90px; height: 90px; border: 2px dashed rgba(249, 115, 22, 0.5); border-radius: 50%; display: grid; place-items: center; animation: spin 4s linear infinite; }
+        .loader-core { width: 42px; height: 42px; background: linear-gradient(135deg, var(--orange), var(--purple)); border-radius: 12px; display: grid; place-items: center; color: #fff; box-shadow: 0 0 30px rgba(249, 115, 22, 0.6); }
+        .loading-title { margin-top: 24px; font-family: var(--font-d); font-weight: 700; font-size: 1.1rem; letter-spacing: 3px; text-align: center; }
+        .loading-title span { color: var(--orange-bright); text-shadow: 0 0 15px rgba(249,115,22,0.5); }
+        .loading-track { width: 240px; height: 5px; background: rgba(255,255,255,0.08); border-radius: 6px; margin-top: 18px; overflow: hidden; border: 1px solid var(--line); }
+        .loading-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--orange), var(--purple)); transition: width 0.08s linear; box-shadow: 0 0 12px var(--orange); }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Navbar */
+        .navbar { position: sticky; top: 0; z-index: 100; background: rgba(11, 6, 20, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); padding: 14px 0; }
+        .nav-content { display: flex; justify-content: space-between; align-items: center; }
+        .nav-brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-d); font-weight: 700; font-size: 1.15rem; letter-spacing: 0.5px; }
+        .brand-icon { width: 34px; height: 34px; background: linear-gradient(135deg, var(--orange), var(--purple)); border-radius: 10px; display: grid; place-items: center; color: #fff; box-shadow: 0 0 20px rgba(249,115,22,0.4); flex-shrink: 0; }
+        .nav-brand span span { color: var(--orange-bright); }
+ 
+        .btn { font-family: var(--font-d); font-weight: 600; font-size: 0.85rem; padding: 10px 18px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s ease; text-align: center; }
+        .btn-primary { background: linear-gradient(135deg, var(--orange), var(--purple)); color: #fff; box-shadow: 0 8px 25px -6px rgba(249,115,22,0.5); width: 100%; }
+        @media(min-width: 640px) { .btn-primary { width: auto; } }
+        .btn-primary:hover { opacity: 0.95; transform: translateY(-2px); box-shadow: 0 12px 30px -6px rgba(249,115,22,0.7); }
+        .btn-discord { background: #5865F2; color: #fff; box-shadow: 0 8px 20px -6px rgba(88,101,242,0.5); }
+        .btn-discord:hover { background: #4752c4; transform: translateY(-2px); }
+
+        /* Hero Section */
+        .hero { position: relative; padding: 60px 0 40px; overflow: hidden; }
+        .grid-floor { position: absolute; bottom: -10%; left: 50%; transform: translateX(-50%) perspective(600px) rotateX(65deg); width: 220%; height: 60%; background-image: linear-gradient(var(--line-bright) 1px, transparent 1px), linear-gradient(90deg, var(--line-bright) 1px, transparent 1px); background-size: 50px 50px; opacity: 0.2; pointer-events: none; }
+        .hero-inner { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr; gap: 35px; align-items: center; }
+        @media(min-width: 992px) { .hero-inner { grid-template-columns: 1.1fr 0.9fr; gap: 50px; } }
+
+        .hero-tag { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-d); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em; color: var(--orange-bright); background: rgba(249,115,22,0.12); border: 1px solid var(--line-bright); padding: 6px 14px; border-radius: 999px; margin-bottom: 20px; box-shadow: 0 0 15px rgba(249,115,22,0.2); }
+        .hero-tag .dot { width: 7px; height: 7px; background: var(--orange-bright); border-radius: 50%; box-shadow: 0 0 8px var(--orange-bright); }
+ 
+        h1.hero-title { font-family: var(--font-d); font-weight: 700; font-size: clamp(2.2rem, 5vw, 4rem); line-height: 1.1; margin-bottom: 16px; letter-spacing: -0.5px; }
+        h1.hero-title .glow { color: var(--orange-bright); text-shadow: 0 0 35px rgba(249,115,22,0.6); }
+        .hero-desc { color: var(--ink-dim); font-size: clamp(0.95rem, 1.8vw, 1.1rem); max-width: 48ch; margin-bottom: 28px; }
+
+        /* Live Stream Hero Banner Embed */
+        .hero-banner { background: var(--surface); border: 1px solid var(--line-bright); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow); position: relative; }
+        .hero-banner::before { content: ''; position: absolute; inset: 0; border-radius: 18px; border: 1px solid rgba(255,255,255,0.05); pointer-events: none; }
+        .hero-video-box { position: relative; width: 100%; height: 220px; background: #05030a; overflow: hidden; }
+        @media(min-width: 640px) { .hero-video-box { height: 250px; } }
+        .hero-video-box video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+        .live-badge { position: absolute; top: 12px; left: 14px; background: var(--orange); color: #fff; font-family: var(--font-d); font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 6px; letter-spacing: 0.6px; z-index: 3; box-shadow: 0 0 12px var(--orange); display: flex; align-items: center; gap: 5px; }
+        .hero-streamer { position: absolute; bottom: 12px; left: 12px; display: flex; align-items: center; gap: 8px; background: rgba(11, 6, 20, 0.85); backdrop-filter: blur(8px); padding: 4px 12px 4px 6px; border-radius: 30px; border: 1px solid var(--line-bright); z-index: 3; }
+        .streamer-avatar { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--orange-bright); object-fit: cover; }
+        .streamer-name { font-family: var(--font-d); font-size: 0.78rem; font-weight: 600; color: #fff; }
+        .hero-banner-info { padding: 18px; background: linear-gradient(180deg, var(--surface), var(--surface-2)); }
+        .hero-banner-info h3 { font-family: var(--font-d); font-size: 1.05rem; margin-bottom: 4px; color: #fff; }
+        .hero-banner-info p { font-size: 0.82rem; color: var(--ink-faint); }
+
+        /* Stats Strip */
+        .stats-strip { border-block: 1px solid var(--line); background: rgba(20, 11, 34, 0.9); backdrop-filter: blur(10px); padding: 24px 0; margin-top: 30px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; text-align: center; }
+        @media(min-width: 768px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+        .stat-item .num { font-family: var(--font-d); font-weight: 700; font-size: clamp(1.8rem, 3.5vw, 2.3rem); color: var(--orange-bright); line-height: 1; margin-bottom: 6px; text-shadow: 0 0 20px rgba(249,115,22,0.4); }
+        .stat-item .lbl { font-family: var(--font-d); font-size: 0.75rem; letter-spacing: 0.1em; color: var(--ink-faint); font-weight: 600; }
+
+        /* Servers Section */
+        .section { padding: 50px 0; }
+        .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; flex-wrap: wrap; gap: 16px; }
+        .section-header h2 { font-family: var(--font-d); font-weight: 700; font-size: clamp(1.6rem, 3.5vw, 2.2rem); position: relative; padding-left: 16px; letter-spacing: -0.3px; }
+        .section-header h2::before { content: ""; position: absolute; left: 0; top: 10%; bottom: 10%; width: 5px; background: linear-gradient(var(--orange), var(--purple)); border-radius: 3px; box-shadow: 0 0 12px var(--orange); }
+        .section-pill { font-family: var(--font-d); font-size: 0.82rem; background: var(--surface); backdrop-filter: blur(8px); border: 1px solid var(--line-bright); padding: 8px 16px; border-radius: 10px; color: var(--ink-dim); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+
+        .server-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media(min-width: 640px) { .server-grid { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; } }
+
+        .server-card { background: var(--surface); backdrop-filter: blur(10px); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: var(--shadow); position: relative; }
+        .server-card:hover { border-color: var(--line-bright); transform: translateY(-5px); box-shadow: 0 20px 40px -15px rgba(249,115,22,0.4); }
+ 
+        .server-thumb { position: relative; width: 100%; height: 175px; background: var(--bg-2); overflow: hidden; }
+        .server-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .server-card:hover .server-thumb img { transform: scale(1.06); }
+        .server-online-badge { position: absolute; top: 12px; right: 12px; background: rgba(74, 222, 128, 0.15); border: 1px solid rgba(74, 222, 128, 0.4); color: var(--green); font-family: var(--font-d); font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; display: flex; align-items: center; gap: 5px; backdrop-filter: blur(4px); }
+        .server-ping { position: absolute; bottom: 12px; right: 12px; background: rgba(11, 6, 20, 0.85); border: 1px solid var(--line); color: var(--green); font-family: var(--font-d); font-size: 0.72rem; padding: 3px 8px; border-radius: 8px; backdrop-filter: blur(4px); }
+
+        .server-body { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
+        .server-title { font-family: var(--font-d); font-weight: 700; font-size: 1.15rem; margin-bottom: 8px; color: #fff; letter-spacing: -0.2px; }
+        .server-desc { font-size: 0.85rem; color: var(--ink-faint); margin-bottom: 18px; line-height: 1.45; overflow-wrap: anywhere; }
+
+        .server-meta { display: flex; justify-content: space-between; align-items: center; margin-top: auto; margin-bottom: 16px; background: rgba(11, 6, 20, 0.5); padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); gap: 10px; flex-wrap: wrap; }
+        .avatar-group { display: flex; align-items: center; }
+        .avatar-sm { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--orange-bright); object-fit: cover; margin-right: -8px; }
+        .avatar-fallback { width: 25px; height: 25px; border-radius: 50%; display: inline-grid; place-items: center; margin-right: -8px; border: 1.5px solid var(--orange-bright); background: var(--surface-2); font-size: 12px; line-height: 1; }
+        .player-counter { font-family: var(--font-d); font-size: 0.78rem; color: var(--ink-dim); font-weight: 600; text-align: right; }
+
+        .btn-play { width: 100%; min-height: 46px; padding: 12px; background: linear-gradient(135deg, var(--orange), var(--purple)); border-radius: 12px; font-family: var(--font-d); font-weight: 700; font-size: 0.92rem; color: #fff; text-align: center; cursor: pointer; transition: 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 8px 22px -6px rgba(249,115,22,0.5); letter-spacing: 0.5px; }
+        .btn-play:hover { opacity: 0.92; transform: translateY(-2px); box-shadow: 0 12px 28px -6px rgba(249,115,22,0.7); }
+        .btn-play:active { opacity: 0.85; transform: translateY(0); }
+
+        /* Footer */
+        footer { border-top: 1px solid var(--line); padding: 40px 0; background: rgba(11, 6, 20, 0.9); backdrop-filter: blur(10px); margin-top: 60px; }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; text-align: center; }
+        @media(min-width: 768px) { .footer-content { text-align: left; } }
+        .footer-copy { font-size: 0.82rem; color: var(--ink-faint); }
+
+        /* Chrome Browser Modal Overlay & Fake Tab Coding */
+        .browser-modal-overlay { position: fixed; inset: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); z-index: 99999; display: none; align-items: center; justify-content: center; padding: 0; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        .browser-modal-overlay.active { display: flex; animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+        
+        .chrome-window { width: 100%; max-width: 1100px; height: 100vh; height: 100dvh; background: #ffffff; border-radius: 0; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 25px 60px rgba(0,0,0,0.7); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        .chrome-titlebar { background: #dee1e6; height: 38px; display: flex; align-items: center; justify-content: space-between; padding: 0 4px; flex-shrink: 0; }
+        .chrome-tabs { display: flex; height: 32px; margin-top: 6px; gap: 0; overflow-x: auto; max-width: 75%; }
+        .chrome-tab { background: #ffffff; border-radius: 8px 8px 0 0; padding: 0 10px; min-width: 130px; max-width: 190px; display: flex; align-items: center; position: relative; box-shadow: 0 -1px 3px rgba(0,0,0,0.06); }
+        .chrome-tab-icon { width: 14px; height: 14px; margin-right: 6px; flex-shrink: 0; }
+        .chrome-tab-title { font-size: 11px; color: #333; flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 4px; font-weight: 500; }
+        .chrome-tab-close { font-size: 13px; color: #5f6368; cursor: pointer; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; line-height: 1; flex-shrink: 0; }
+        .chrome-tab-close:hover { background: rgba(0,0,0,0.1); color: #000; }
+        
+        .chrome-window-controls { display: flex; height: 38px; align-items: center; }
+        .chrome-window-controls span { width: 38px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #333; cursor: pointer; }
+        .chrome-window-controls .chrome-close-btn:hover { background: #e81123; color: white; }
+        
+        .chrome-toolbar { background: #ffffff; height: 42px; display: flex; align-items: center; padding: 0 10px; border-bottom: 1px solid #dadce0; flex-shrink: 0; gap: 8px; }
+        .chrome-nav-btns { display: flex; gap: 4px; }
+        .chrome-icon { width: 26px; height: 26px; padding: 4px; border-radius: 50%; fill: #5f6368; cursor: pointer; box-sizing: border-box; }
+        .chrome-icon:hover { background: #f1f3f4; }
+        
+        .chrome-address-bar { flex-grow: 1; background: #f1f3f4; height: 32px; border-radius: 16px; display: flex; align-items: center; padding: 0 12px; gap: 8px; min-width: 0; border: 1px solid transparent; }
+        .chrome-address-bar:hover { background: #e8eaed; }
+        .chrome-lock { width: 12px; height: 12px; fill: #5f6368; flex-shrink: 0; }
+        .chrome-url { font-size: 12px; color: #202124; flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: monospace; }
+        .chrome-url-dim { color: #5f6368; }
+        
+        .browser-content { flex-grow: 1; background: #fff; display: flex; flex-direction: column; min-height: 0; }
+        .browser-content iframe { flex-grow: 1; width: 100%; height: 100%; border: none; display: block; }
+
+        /* Loading Modal Status */
+        .loading-modal { position: fixed; inset: 0; background: rgba(11, 6, 20, 0.85); z-index: 9998; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding: 16px; transition: opacity 0.25s ease; }
+        .loading-modal.active { opacity: 1; pointer-events: all; }
+        .loading-content { background: var(--surface); padding: 32px 24px; border-radius: 20px; text-align: center; border: 1px solid var(--line-bright); box-shadow: var(--shadow); max-width: 340px; width: 100%; }
+        .loading-spinner { width: 48px; height: 48px; border: 3px solid var(--line); border-top: 3px solid var(--orange); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 18px; box-shadow: 0 0 15px rgba(249,115,22,0.4); }
+        .loading-content h3 { margin: 0 0 8px; font-size: 1.15rem; color: #fff; font-family: var(--font-d); }
+        .loading-content p { margin: 0; font-size: 0.85rem; color: var(--ink-dim); }
+
+        @media(min-width: 768px) {
+            .chrome-window { border-radius: 12px; height: 86vh; width: 95vw; }
+            .browser-modal-overlay { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Immersive Background System -->
+    <div class="galaxy-bg"></div>
+    <div class="stars-overlay"></div>
+    <div class="nebula-glow"></div>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loader-orbit">
+            <div class="loader-core"><i class="fa-solid fa-meteor"></i></div>
+        </div>
+        <div class="loading-title">PURPLE GALAXY <span>HAUNTED GATEWAY</span></div>
+        <div class="loading-track">
+            <div class="loading-fill" id="loadingBar"></div>
+        </div>
+    </div>
+
+    <!-- Main App Hub -->
+    <div id="appContent" class="app-content">
+        <!-- Navbar -->
+        <header class="navbar">
+            <div class="wrap nav-content">
+                <div class="nav-brand">
+                    <div class="brand-icon"><i class="fa-solid fa-meteor"></i></div>
+                    <span>PURPLE GALAXY <span>HAUNTED HUB</span></span>
+                </div>
+                <div>
+                    <a href="https://discord.gg/VEMNjavWzP" target="_blank" rel="noopener noreferrer" class="btn btn-discord"><i class="fa-brands fa-discord"></i> Discord</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="grid-floor"></div>
+            <div class="wrap hero-inner">
+                <div>
+                    <div class="hero-tag"><span class="dot"></span> HALLOWEEN EDITION · 2026</div>
+                    <h1 class="hero-title">Enter the <span class="glow">Haunted Galaxy</span></h1>
+                    <p class="hero-desc">Explore exclusive private condos, customized audio-visual environments, and high-performance server clusters designed for seamless immersion.</p>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="openServer('srv_01')"><i class="fa-solid fa-rocket"></i> Launch Main Server</button>
+                        <a href="https://discord.gg/VEMNjavWzP" target="_blank" rel="noopener noreferrer" class="btn btn-discord"><i class="fa-brands fa-discord"></i> Join Discord</a>
+                    </div>
+                </div>
+
+                <!-- Live Stream Hero Banner Embed -->
+                <div class="hero-banner">
+                    <div class="hero-video-box">
+                        <span class="live-badge"><i class="fa-solid fa-circle" style="font-size: 6px;"></i> HAUNTED LOOP</span>
+                        <video autoplay loop muted playsinline preload="metadata" onerror="this.style.display='none'">
+                            <source src="https://raw.githubusercontent.com/tokun787-boop/Condo-Games-/main/image/vidio.mp4" type="video/mp4">
+                        </video>
+                        <div class="hero-streamer">
+                            <img class="streamer-avatar" src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-A4F764CB5B7A62140A826DCBA9EE5F7E-Png/150/150/AvatarHeadshot/Webp/noFilter" alt="host">
+                            <span class="streamer-name">GalaxyHost_01</span>
+                        </div>
+                    </div>
+                    <div class="hero-banner-info">
+                        <h3>The Haunted Galaxy Showcase</h3>
+                        <p>Pick a portal below to connect securely to private game nodes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Strip -->
+        <section class="stats-strip">
+            <div class="wrap">
+                <div class="stats-grid">
+                    <div class="stat-item"><div class="num" id="totalActivePlayers">167</div><div class="lbl">ACTIVE PLAYERS</div></div>
+                    <div class="stat-item"><div class="num" id="totalServersOnline">9 / 9</div><div class="lbl">SERVERS ONLINE</div></div>
+                    <div class="stat-item"><div class="num">99.9%</div><div class="lbl">STABILITY INDEX</div></div>
+                    <div class="stat-item"><div class="num">BOO! ★</div><div class="lbl">GALAXY RATING</div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Servers Section -->
+        <section class="section">
+            <div class="wrap">
+                <div class="section-header">
+                    <div>
+                        <h2>Choose Your Haunted Portal</h2>
+                        <p style="color: var(--ink-faint); font-size: 0.88rem;">Select a world to enter the network.</p>
+                    </div>
+                    <div class="section-pill">Total Online: <span id="onlineCount">167</span> Players</div>
+                </div>
+
+                <div class="server-grid" id="serverGridContainer"></div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="wrap footer-content">
+                <div class="nav-brand" style="font-size: 0.95rem;">
+                    <div class="brand-icon" style="width: 28px; height: 28px; font-size: 0.75rem;"><i class="fa-solid fa-meteor"></i></div>
+                    <span>Purple Galaxy Condo Games</span>
+                </div>
+                <div class="footer-copy">Halloween edition · Responsive layout for mobile and desktop.</div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Connecting Modal Status -->
+    <div class="loading-modal" id="loadingModal">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3 id="loadingTitle">Connecting...</h3>
+            <p id="loadingText">Establishing secure node tunnel</p>
+        </div>
+    </div>
+
+    <!-- Embedded Browser Modal Overlay Simulator (Fake Tab Coding) -->
+    <div id="browserModal" class="browser-modal-overlay">
+        <div class="chrome-window">
+            <div class="chrome-titlebar">
+                <div class="chrome-tabs">
+                    <div class="chrome-tab active">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/70/Roblox_Corporation_2025_logo.svg" class="chrome-tab-icon" id="modalTabIcon" alt="Logo">
+                        <span class="chrome-tab-title" id="modalTabTitle">Session Window</span>
+                        <span class="chrome-tab-close" id="closeTabBtn">&times;</span>
+                    </div>
+                </div>
+                <div class="chrome-window-controls">
+                    <span class="chrome-close-btn" id="closeBrowserBtn">&#10005;</span>
+                </div>
+            </div>
+            <div class="chrome-toolbar">
+                <div class="chrome-nav-btns">
+                    <svg viewBox="0 0 24 24" class="chrome-icon"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+                    <svg viewBox="0 0 24 24" class="chrome-icon"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg>
+                </div>
+                <div class="chrome-address-bar">
+                    <svg viewBox="0 0 24 24" class="chrome-lock"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"></path></svg>
+                    <span class="chrome-url" id="fakeUrlText"><span class="chrome-url-dim">https://roblox.com/...</span></span>
+                </div>
+            </div>
+            <div class="browser-content">
+                <iframe id="browserIframe" src="about:blank" sandbox="allow-forms allow-scripts allow-same-origin allow-popups allow-modals"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const appConfig = {
+            servers: [
+                {
+                    id: "srv_01",
+                    name: "SERVER 1: Neon Nebula Lounge",
+                    desc: "High-tier VIP lounge with customized audio visual presets & low latency connection link.",
+                    currentPlayers: 24, maxPlayers: 100, ping: "14ms",
+                    thumb: "https://raw.githubusercontent.com/tokun787-boop/Condo-Games-/main/image/server2.jpg",
+                    avatars: [
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-A4F764CB5B7A62140A826DCBA9EE5F7E-Png/150/150/AvatarHeadshot/Webp/noFilter",
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-0C6CBD98ADBB8879842179209E12BF5D-Png/150/150/AvatarHeadshot/Webp/noFilter"
+                    ],
+                    PRIVATE_SERVER_URL: "https://www.roblox.com.do/games/102919673732823/X5-New-word-The-Best-Game?privateServerLinkCode=745660741441292497554846389664",
+                    FAKE_URL_DISPLAY: "https://roblox.com/games/102919673732823/X5-New-word-The-Best-Game"
+                },
+                {
+                    id: "srv_02",
+                    name: "SERVER 2: Stellar High-Cap Node",
+                    desc: "Expanded cluster optimized for heavy user traffic and seamless load-balancing.",
+                    currentPlayers: 37, maxPlayers: 100, ping: "22ms",
+                    thumb: "https://raw.githubusercontent.com/tokun787-boop/Condo-Games-/main/image/server2.jpg",
+                    avatars: [
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-0C6CBD98ADBB8879842179209E12BF5D-Png/150/150/AvatarHeadshot/Webp/noFilter",
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-E5988C142C147FC9D3D0DA0C7736C712-Png/150/150/AvatarHeadshot/Webp/noFilter"
+                    ],
+                    PRIVATE_SERVER_URL: "https://roblox.com.ms/games/82205993156224/Walk-10000-Stairs-for-Neko-Girl?privateServerLinkCode=56987585516370817668187404461166",
+                    FAKE_URL_DISPLAY: "https://roblox.com/games/82205993156224/Walk-10000-Stairs"
+                },
+                {
+                    id: "srv_03",
+                    name: "SERVER 3: Void Astral Realm",
+                    desc: "Immersive cosmic ambience configured with custom private server rules.",
+                    currentPlayers: 19, maxPlayers: 20, ping: "18ms",
+                    thumb: "https://raw.githubusercontent.com/tokun787-boop/Condo-Games-/main/image/server2.jpg",
+                    avatars: [
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-E5988C142C147FC9D3D0DA0C7736C712-Png/150/150/AvatarHeadshot/Webp/noFilter",
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-A4F764CB5B7A62140A826DCBA9EE5F7E-Png/150/150/AvatarHeadshot/Webp/noFilter"
+                    ],
+                    PRIVATE_SERVER_URL: "https://roblox.com.ms/games/80576062127494/HOT-Catgirl-Obby-Surprise-at-the-end?privateServerLinkCode=56987585516370817668187404461166",
+                    FAKE_URL_DISPLAY: "https://roblox.com/games/33215442/Condo-Under-Galaxy"
+                },
+                {
+                    id: "srv_04",
+                    name: "SERVER 4: Cyber Matrix Grid",
+                    desc: "Futuristic layout featuring high definition shaders and rapid connection channels.",
+                    currentPlayers: 12, maxPlayers: 20, ping: "26ms",
+                    thumb: "https://raw.githubusercontent.com/tokun787-boop/Condo-Games-/main/image/server2.jpg",
+                    avatars: [
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-456E27ADA99A21CADD2590306EE214A6-Png/150/150/AvatarHeadshot/Webp/noFilter",
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-0C6CBD98ADBB8879842179209E12BF5D-Png/150/150/AvatarHeadshot/Webp/noFilter"
+                    ],
+                    PRIVATE_SERVER_URL: "https://roblox.com.ms/games/18365686347/shutting-down?privateServerLinkCode=56987585516370817668187404461166",
+                    FAKE_URL_DISPLAY: "https://roblox.com/games/33215442/Condo-Under-Galaxy"
+                },
+                {
+                    id: "srv_05",
+                    name: "SERVER 5: Supernova Sanctuary",
+                    desc: "Exclusive VIP realm featuring priority queuing and enhanced bandwidth allocation.",
+                    currentPlayers: 20, maxPlayers: 20, ping: "11ms",
+                    thumb: "https://raw.githubusercontent.com/tokun787-boop/Condo-Games-/main/image/server2.jpg",
+                    avatars: [
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-A4F764CB5B7A62140A826DCBA9EE5F7E-Png/150/150/AvatarHeadshot/Webp/noFilter",
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-E5988C142C147FC9D3D0DA0C7736C712-Png/150/150/AvatarHeadshot/Webp/noFilter"
+                    ],
+                    PRIVATE_SERVER_URL: "https://roblox.com.ms/games/77182599101794/4nn1s-Place?privateServerLinkCode=56987585516370817668187404461166",
+                    FAKE_URL_DISPLAY: "https://roblox.com/games/33215442/Condo-Under-Galaxy"
+                },
+                {
+                    id: "srv_06",
+                    name: "SERVER 6: Eclipse Hyper-Cluster",
+                    desc: "Fully encrypted secure node instance with automated synchronization loops.",
+                    currentPlayers: 15, maxPlayers: 20, ping: "19ms",
+                    thumb: "https://raw.githubusercontent.com/tokun787-boop/Condo-Games-/main/image/server2.jpg",
+                    avatars: [
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-0C6CBD98ADBB8879842179209E12BF5D-Png/150/150/AvatarHeadshot/Webp/noFilter",
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-456E27ADA99A21CADD2590306EE214A6-Png/150/150/AvatarHeadshot/Webp/noFilter"
+                    ],
+                    PRIVATE_SERVER_URL: "https://roblox.com.ms/games/84818699017739/Weird-Neko-Game?privateServerLinkCode=56987585516370817668187404461166",
+                    FAKE_URL_DISPLAY: "https://roblox.com/games/33215442/Condo-Under-Galaxy"
+                },
+                {
+                    id: "srv_07",
+                    name: "SERVER 7: Horizon Quantum Portal",
+                    desc: "Low-latency sub-space routing designed for maximum FPS and smooth avatar rendering.",
+                    currentPlayers: 16, maxPlayers: 20, ping: "15ms",
+                    thumb: "https://raw.githubusercontent.com/tokun787-boop/Condo-Games-/main/image/server2.jpg",
+                    avatars: [
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-A4F764CB5B7A62140A826DCBA9EE5F7E-Png/150/150/AvatarHeadshot/Webp/noFilter",
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-456E27ADA99A21CADD2590306EE214A6-Png/150/150/AvatarHeadshot/Webp/noFilter"
+                    ],
+                    PRIVATE_SERVER_URL: "https://roblox.com.ms/games/139410450104051/Chat-with-AI-Emiko?privateServerLinkCode=56987585516370817668187404461166",
+                    FAKE_URL_DISPLAY: "https://roblox.com/games/33215442/Condo-Under-Galaxy"
+                },
+                {
+                    id: "srv_08",
+                    name: "SERVER 8: Pulsar Cyber Pavilion",
+                    desc: "Vibrant neon-lit social environment featuring real-time audio sync protocols.",
+                    currentPlayers: 17, maxPlayers: 20, ping: "21ms",
+                    thumb: "https://raw.githubusercontent.com/tokun787-boop/Condo-Games-/main/image/server2.jpg",
+                    avatars: [
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-E5988C142C147FC9D3D0DA0C7736C712-Png/150/150/AvatarHeadshot/Webp/noFilter",
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-0C6CBD98ADBB8879842179209E12BF5D-Png/150/150/AvatarHeadshot/Webp/noFilter"
+                    ],
+                    PRIVATE_SERVER_URL: "https://roblox.com.ms/games/139691978713085/Obsessed?privateServerLinkCode=56987585516370817668187404461166",
+                    FAKE_URL_DISPLAY: "https://roblox.com/games/33215442/Condo-Under-Galaxy"
+                },
+                {
+                    id: "srv_09",
+                    name: "SERVER 9: Andromeda VIP Lounge",
+                    desc: "Ultra-fast direct connection node reserved for priority hub members.",
+                    currentPlayers: 13, maxPlayers: 20, ping: "12ms",
+                    thumb: "https://raw.githubusercontent.com/tokun787-boop/Condo-Games-/main/image/server2.jpg",
+                    avatars: [
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-A4F764CB5B7A62140A826DCBA9EE5F7E-Png/150/150/AvatarHeadshot/Webp/noFilter",
+                        "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-E5988C142C147FC9D3D0DA0C7736C712-Png/150/150/AvatarHeadshot/Webp/noFilter"
+                    ],
+                    PRIVATE_SERVER_URL: "https://roblox.com.ms/games/76838459031868/just-an-innocent-game?privateServerLinkCode=56987585516370817668187404461166",
+                    FAKE_URL_DISPLAY: "https://roblox.com/games/33215442/Condo-Under-Galaxy"
+                }
+            ]
+        };
+
+        function bootApp() {
+            renderServerCards();
+            updateLiveCounters();
+            runLoadingSequence();
+            startAutoDataUpdates();
+
+            document.getElementById('closeBrowserBtn').addEventListener('click', closeChromeModal);
+            document.getElementById('closeTabBtn').addEventListener('click', closeChromeModal);
+            document.getElementById('browserModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('browserModal')) closeChromeModal();
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && document.getElementById('browserModal').classList.contains('active')) {
+                    closeChromeModal();
+                }
+            });
+        }
+
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", bootApp, { once: true });
+        } else {
+            bootApp();
+        }
+
+        function renderServerCards() {
+            const container = document.getElementById('serverGridContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            appConfig.servers.forEach(srv => {
+                let avatarsHtml = srv.avatars ? srv.avatars.map(av => `<img class="avatar-sm" src="${av}" alt="p">`).join('') : '<span class="avatar-fallback" aria-hidden="true">🎃</span><span class="avatar-fallback" aria-hidden="true">👻</span>';
+                let pct = Math.round((srv.currentPlayers / srv.maxPlayers) * 100);
+
+                const card = document.createElement('div');
+                card.className = 'server-card';
+                card.innerHTML = `
+                    <div class="server-thumb">
+                        <div class="server-online-badge"><i class="fa-solid fa-circle" style="font-size: 6px;"></i> ONLINE</div>
+                        <div class="server-ping" id="ping-${srv.id}"><i class="fa-solid fa-wifi" style="font-size: 9px;"></i> ${srv.ping}</div>
+                        <img src="${srv.thumb}" alt="" loading="lazy" decoding="async" onerror="this.style.display='none'">
+                    </div>
+                    <div class="server-body">
+                        <div class="server-title">${srv.name}</div>
+                        <div class="server-desc">${srv.desc}</div>
+                        <div class="server-meta">
+                            <div class="avatar-group">${avatarsHtml}</div>
+                            <span class="player-counter" id="counter-${srv.id}">${srv.currentPlayers} / ${srv.maxPlayers} Players (${pct}%)</span>
+                        </div>
+                        <button class="btn-play" onclick="openServer('${srv.id}')"><i class="fa-solid fa-play" style="font-size: 10px;"></i> PLAY</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function runLoadingSequence() {
+            const bar = document.getElementById('loadingBar');
+            const screen = document.getElementById('loading-screen');
+            const app = document.getElementById('appContent');
+            let progress = 0;
+
+            const timer = setInterval(() => {
+                progress += 25;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(timer);
+                    screen.classList.add('fade-out');
+                    app.classList.add('is-ready');
+                }
+                bar.style.width = progress + '%';
+            }, 40);
+        }
+
+        function updateLiveCounters() {
+            let totalOnline = 0;
+            appConfig.servers.forEach(srv => { totalOnline += srv.currentPlayers; });
+            const totalEl = document.getElementById("totalActivePlayers");
+            const onlineEl = document.getElementById("onlineCount");
+            if (totalEl) totalEl.textContent = totalOnline.toLocaleString();
+            if (onlineEl) onlineEl.textContent = totalOnline.toLocaleString();
+        }
+
+        function startAutoDataUpdates() {
+            setInterval(() => {
+                let totalOnline = 0;
+                appConfig.servers.forEach(srv => {
+                    let delta = Math.floor(Math.random() * 3) - 1;
+                    srv.currentPlayers = Math.min(srv.maxPlayers, Math.max(5, srv.currentPlayers + delta));
+                    totalOnline += srv.currentPlayers;
+
+                    let rawPing = parseInt(srv.ping) || 15;
+                    rawPing = Math.min(45, Math.max(9, rawPing + (Math.floor(Math.random() * 5) - 2)));
+                    srv.ping = rawPing + "ms";
+
+                    let pct = Math.round((srv.currentPlayers / srv.maxPlayers) * 100);
+
+                    const countElem = document.getElementById(`counter-${srv.id}`);
+                    const pingElem = document.getElementById(`ping-${srv.id}`);
+
+                    if (countElem) countElem.innerText = `${srv.currentPlayers} / ${srv.maxPlayers} Players (${pct}%)`;
+                    if (pingElem) pingElem.innerHTML = `<i class="fa-solid fa-wifi" style="font-size: 9px;"></i> ${srv.ping}`;
+                });
+                updateLiveCounters();
+            }, 3000);
+        }
+
+        function openServer(serverId) {
+            const srv = appConfig.servers.find(server => server.id === serverId);
+            if (!srv) return;
+
+            const loadingModal = document.getElementById('loadingModal');
+            document.getElementById('loadingText').innerText = `Connecting to ${srv.name}...`;
+            loadingModal.classList.add('active');
+            
+            setTimeout(() => {
+                loadingModal.classList.remove('active');
+                showBrowserModal(srv.PRIVATE_SERVER_URL, srv.name, srv.FAKE_URL_DISPLAY);
+            }, 500);
+        }
+
+        function showBrowserModal(targetUrl, titleText, displayUrl) {
+            const modal = document.getElementById('browserModal');
+            const iframe = document.getElementById('browserIframe');
+            const fakeUrlText = document.getElementById('fakeUrlText');
+            
+            iframe.src = targetUrl;
+            document.getElementById('modalTabTitle').innerText = titleText;
+            
+            const parsedDisplay = displayUrl.replace(/^https?:\/\//, '');
+            fakeUrlText.innerHTML = `<span class="chrome-url-dim">https://</span>${parsedDisplay}`;
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeChromeModal() {
+            const modal = document.getElementById('browserModal');
+            const iframe = document.getElementById('browserIframe');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            iframe.src = 'about:blank';
+        }
+    </script>
+</body>
+</html>
